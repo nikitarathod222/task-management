@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">👤 {{ employee[1] }} Profile</h2>
+
+<!-- Assign Task -->
+<div class="card p-4 mb-4">
+    <h4>Assign Task</h4>
+
+    <form action="/assign_task/{{ employee[0] }}" method="POST">
+        <input class="form-control mb-2" name="title" placeholder="Task Title" required>
+
+        <textarea class="form-control mb-2" name="description" placeholder="Description"></textarea>
+
+        <input class="form-control mb-2" type="date" name="deadline" required>
+
+        <button class="btn btn-success">Assign Task</button>
+    </form>
+</div>
+
+<!-- Task List -->
+<h4>Tasks</h4>
+
+<table class="table table-bordered">
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+    <th>Progress</th>
+</tr>
+
+{% for task in tasks %}
+<tr>
+    <td>{{ task[1] }}</td>
+
+    <td>
+        {% if task[6] == 100 %}
+            <span class="badge bg-success">Completed</span>
+        {% elif task[6] >= 50 %}
+            <span class="badge bg-warning">In Progress</span>
+        {% elif task[6] >= 25 %}
+            <span class="badge bg-info">Starting</span>
+        {% else %}
+            <span class="badge bg-secondary">Pending</span>
+        {% endif %}
+    </td>
+
+    <td>
+        <div class="progress">
+            <div class="progress-bar" style="width: {{ task[6] }}%">
+                {{ task[6] }}%
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

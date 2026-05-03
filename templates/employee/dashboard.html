@@ -1,0 +1,175 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e3f2fd, #f8fbff);
+    }
+
+    .dashboard-container {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        color: #333;
+        backdrop-filter: blur(10px);
+    }
+
+    .glass-card {
+        background: rgba(255,255,255,0.7);
+        border-radius: 15px;
+        padding: 20px;
+        color: #333;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .table {
+        background: rgba(255,255,255,0.9);
+        border-radius: 10px;
+        overflow: hidden;
+        color: #333;
+    }
+
+    .table th {
+        background: #e3f2fd;
+        color: #0d47a1;
+    }
+
+    .table td {
+        background: rgba(255,255,255,0.9);
+        vertical-align: middle;
+    }
+
+    .progress {
+        height: 20px;
+        border-radius: 10px;
+        background: #e3f2fd;
+    }
+
+    .progress-bar {
+        background: #42a5f5;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .btn-update {
+        width: 100%;
+        border-radius: 8px;
+        background: #42a5f5;
+        color: white;
+        transition: 0.3s;
+    }
+
+    .btn-update:hover {
+        background: #1e88e5;
+    }
+
+    h2, h4 {
+        font-weight: 600;
+        color: #0d47a1;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <div class="dashboard-container">
+
+        <h2 class="mb-4">Employee Dashboard</h2>
+
+        <!-- STATS -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="glass-card text-center">
+                    <h5>Your Tasks</h5>
+                    <h3>{{ tasks|length }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- TASK TABLE -->
+        <div class="glass-card mb-4">
+
+            <h4 class="mb-3">Your Tasks</h4>
+
+            <table class="table table-bordered text-center">
+
+                <tr>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th>Update</th>
+                </tr>
+
+                {% for task in tasks %}
+                <tr>
+
+                    <td>{{ task[1] }}</td>
+
+                    <td>
+                        {% if task[5] == 'completed' %}
+                            <span class="badge bg-success">Completed</span>
+                        {% elif task[5] == 'in_progress' %}
+                            <span class="badge bg-warning text-dark">In Progress</span>
+                        {% elif task[5] == 'starting' %}
+                            <span class="badge bg-info text-dark">Starting</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Pending</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: {{ task[6] }}%">
+                                {{ task[6] }}%
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <form action="/update_progress/{{ task[0] }}" method="POST">
+                            <input type="number" name="progress" min="0" max="100" required class="form-control mb-1">
+                            <button class="btn btn-update btn-sm">Update</button>
+                        </form>
+                    </td>
+
+                </tr>
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+        <!-- OVERDUE TASKS -->
+        <div class="glass-card">
+
+            <h4 class="text-danger mb-3">⚠ Overdue Tasks</h4>
+
+            <table class="table table-bordered text-center">
+
+                <tr>
+                    <th>Task</th>
+                    <th>Deadline</th>
+                </tr>
+
+                {% for task in overdue_tasks %}
+                <tr>
+                    <td>{{ task[1] }}</td>
+                    <td>{{ task[7] }}</td>
+                </tr>
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

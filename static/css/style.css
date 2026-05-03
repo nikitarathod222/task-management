@@ -1,0 +1,77 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f6f9;
+}
+
+/* Sidebar */
+.sidebar {
+    background: #212529;
+    color: white;
+    height: 100vh;
+}
+
+.sidebar a {
+    color: #adb5bd;
+    text-decoration: none;
+    display: block;
+    padding: 8px;
+}
+
+.sidebar a:hover {
+    color: white;
+    background: #343a40;
+}
+
+/* Cards */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Progress bar smooth */
+.progress-bar {
+    transition: width 0.5s ease;
+}
+.card:hover {
+    transform: scale(1.02);
+    transition: 0.3s;
+}
+.btn {
+    border-radius: 8px;
+}
+
+.kanban-container {
+    display: flex;
+    gap: 20px;
+}
+
+.kanban-column {
+    flex: 1;
+    background: #f1f3f5;
+    padding: 15px;
+    border-radius: 10px;
+    min-height: 400px;
+}
+
+.kanban-column h5 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.task-card {
+    background: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    cursor: grab;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.sidebar a {
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.sidebar a:hover {
+    background: #343a40;
+}

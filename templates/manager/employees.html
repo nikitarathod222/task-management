@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Employees</h2>
+
+<table class="table table-bordered">
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Action</th>
+</tr>
+
+{% for emp in employees %}
+<tr>
+    <td>{{ emp[1] }}</td>
+    <td>{{ emp[2] }}</td>
+    <td>
+        <a href="/employee/{{ emp[0] }}" class="btn btn-primary btn-sm">
+            View Profile
+        </a>
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

@@ -1,0 +1,252 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e3f2fd, #f8fbff);
+    }
+
+    .dashboard-container {
+        background: rgba(255,255,255,0.85);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        color: #333;
+    }
+
+    .glass-card {
+        background: rgba(255,255,255,0.7);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .table {
+        background: rgba(255,255,255,0.95);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table th {
+        background: #e3f2fd;
+        color: #0d47a1;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .progress {
+        height: 20px;
+        border-radius: 10px;
+        background: #e3f2fd;
+    }
+
+    .progress-bar {
+        background: #42a5f5;
+        font-size: 12px;
+    }
+
+    .btn-custom {
+        border-radius: 8px;
+        background: #42a5f5;
+        color: white;
+    }
+
+    .btn-custom:hover {
+        background: #1e88e5;
+    }
+
+    h2, h4 {
+        color: #0d47a1;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container mt-4">
+
+<div class="dashboard-container">
+
+<h2 class="mb-4">Manager Dashboard</h2>
+
+<!-- STATS -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="glass-card text-center">
+            <h6>Total Employees</h6>
+            <h3>{{ employees|length }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="glass-card text-center">
+            <h6>Total Tasks</h6>
+            <h3>{{ tasks|length }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- EMPLOYEE PERFORMANCE -->
+<div class="glass-card mb-4">
+<h4 class="mb-3">Employee Performance</h4>
+
+<table class="table table-bordered text-center">
+<tr>
+<th>Name</th>
+<th>Total</th>
+<th>Completed</th>
+<th>Performance</th>
+</tr>
+
+{% for emp in employee_stats %}
+<tr>
+<td>{{ emp[0] }}</td>
+<td>{{ emp[1] }}</td>
+<td>{{ emp[2] or 0 }}</td>
+
+<td>
+{% if emp[1] == 0 %}
+    <span class="text-muted">No Tasks</span>
+{% else %}
+<div class="progress">
+    <div class="progress-bar"
+         style="width: {{ emp[3] or 0 }}%">
+         {{ emp[3] or 0 }}%
+    </div>
+</div>
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<!-- EMPLOYEES -->
+<div class="glass-card mb-4">
+<h4 class="mb-3">Employees</h4>
+
+<table class="table table-bordered text-center">
+<tr>
+<th>Name</th>
+<th>Assign</th>
+<th>Profile</th>
+</tr>
+
+{% for emp in employees %}
+<tr>
+<td>{{ emp[1] }}</td>
+
+<td>
+<button class="btn btn-custom btn-sm"
+    onclick="openModal({{ emp[0] }}, '{{ emp[1] }}')">
+    Assign
+</button>
+</td>
+
+<td>
+<a href="/employee/{{ emp[0] }}" class="btn btn-info btn-sm">
+    View Profile
+</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<!-- ASSIGN MODAL -->
+<div class="modal fade" id="assignModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" style="border-radius:15px;">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+            Assign Task to <span id="empName"></span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form method="POST" id="assignForm">
+        <div class="modal-body">
+
+          <input type="text" name="title"
+                 class="form-control mb-2"
+                 placeholder="Task Title" required>
+
+          <textarea name="description"
+                    class="form-control mb-2"
+                    placeholder="Description"></textarea>
+
+          <input type="date" name="deadline"
+                 class="form-control" required>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-custom">Assign</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- TASK ANALYTICS -->
+<div class="glass-card">
+<h4 class="mb-3">Task Analytics</h4>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="p-2" style="height:280px;">
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="p-2" style="height:280px;">
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- CHART SCRIPT -->
+<script>
+window.onload = function () {
+
+    const taskData = {{ [
+        task_stats.completed or 0,
+        task_stats.in_progress or 0,
+        task_stats.pending or 0
+    ] | tojson }};
+
+    new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Completed','In Progress','Pending'],
+            datasets: [{
+                data: taskData,
+                backgroundColor: ['#66bb6a','#ffca28','#ef5350']
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Completed','In Progress','Pending'],
+            datasets: [{
+                label: 'Tasks',
+                data: taskData,
+                backgroundColor: ['#66bb6a','#ffca28','#ef5350']
+            }]
+        }
+    });
+
+};
+</script>
+
+{% endblock %}

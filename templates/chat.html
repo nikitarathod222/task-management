@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h3>Private Chat</h3>
+
+<div id="chat-box" class="chat-box"></div>
+
+<div class="input-group mt-3">
+    <input id="message" class="form-control" placeholder="Type message...">
+    <button onclick="sendMessage()" class="btn btn-primary">Send</button>
+</div>
+
+<!-- Styles -->
+<style>
+.chat-box {
+    height: 350px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: #fff;
+    border-radius: 10px;
+}
+
+.message {
+    margin: 8px 0;
+    padding: 8px 12px;
+    border-radius: 12px;
+    max-width: 70%;
+}
+
+.sent {
+    background: #0d6efd;
+    color: white;
+    margin-left: auto;
+    text-align: right;
+}
+
+.received {
+    background: #e9ecef;
+}
+</style>
+
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
+<script>
+var socket = io();
+
+// ✅ Join private room
+socket.emit("join", {
+    user_id: "{{ session['user_id'] }}",
+    receiver_id: "{{ receiver_id }}"
+});
+
+// ✅ Send message
+function sendMessage() {
+    let input = document.getElementById("message");
+    let msg = input.value.trim();
+
+    if (msg === "") return;
+
+    // Show own message instantly
+    addMessage(msg, "sent");
+
+    socket.emit("private_message", {
+        message: msg,
+        receiver_id: "{{ receiver_id }}"
+    });
+
+    input.value = "";
+}
+
+// ✅ Receive message
+socket.on("receive_message", function(data) {
+    addMessage(data, "received");
+});
+
+// ✅ Add message to UI
+function addMessage(msg, type) {
+    let box = document.getElementById("chat-box");
+
+    let div = document.createElement("div");
+    div.classList.add("message", type);
+    div.innerText = msg;
+
+    box.appendChild(div);
+
+    // Auto scroll
+    box.scrollTop = box.scrollHeight;
+}
+
+// ✅ Enter key support
+document.getElementById("message").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+});
+</script>
+
+{% endblock %}

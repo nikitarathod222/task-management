@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Kanban Board</h2>
+
+<div class="kanban-container">
+
+    <!-- PENDING -->
+    <div class="kanban-column" data-status="pending">
+        <h5>Pending</h5>
+
+        {% for task in tasks if task[5] == 'pending' %}
+        <div class="task-card" draggable="true" data-id="{{ task[0] }}">
+            {{ task[1] }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- IN PROGRESS -->
+    <div class="kanban-column" data-status="in_progress">
+        <h5>In Progress</h5>
+
+        {% for task in tasks if task[5] == 'in_progress' %}
+        <div class="task-card" draggable="true" data-id="{{ task[0] }}">
+            {{ task[1] }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- COMPLETED -->
+    <div class="kanban-column" data-status="completed">
+        <h5>Completed</h5>
+
+        {% for task in tasks if task[5] == 'completed' %}
+        <div class="task-card" draggable="true" data-id="{{ task[0] }}">
+            {{ task[1] }}
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}
