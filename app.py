@@ -5,7 +5,7 @@ from database import mysql
 from datetime import date
 from flask_socketio import SocketIO
 from modules.auth import auth
-
+import os
 app = Flask(__name__)
 app.config.from_object(Config)
 
