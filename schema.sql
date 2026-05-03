@@ -1,9 +1,7 @@
 CREATE DATABASE task_management;
 USE task_management;
 
--- =============================
--- 👤 USERS TABLE
--- =============================
+
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
@@ -13,9 +11,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =============================
--- 📋 TASKS TABLE
--- =============================
+
 CREATE TABLE tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255),
@@ -29,9 +25,6 @@ CREATE TABLE tasks (
     FOREIGN KEY (assigned_by) REFERENCES users(id)
 );
 
--- =============================
--- 💬 MESSAGES TABLE
--- =============================
 CREATE TABLE messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sender_id INT,
@@ -42,8 +35,5 @@ CREATE TABLE messages (
     FOREIGN KEY (receiver_id) REFERENCES users(id)
 );
 
--- =============================
--- 🔐 INSERT DEFAULT ADMIN
--- =============================
 INSERT INTO users(name, email, password, role)
 VALUES ('Admin', 'admin@gmail.com', '$2b$12$AHOGTaa/CCtKwF/Li2LVj.unE1eVSmnsKkkzH94pvSZdTPuW7sG8q', 'admin');
